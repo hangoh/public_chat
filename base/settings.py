@@ -79,23 +79,7 @@ TEMPLATES = [
     },
 ]
 
-import ssl
-new_context = ssl.SSLContext() # this sets the verify_mode to 'CERT_NONE'
-host = [{
-        'address': f'rediss://{REDIS_HOST}:{REDIS_PORT}', # don't miss the 'rediss'!
-        'db': REDIS_DB,
-        'password': REDIS_PASSWORD,
-        'ssl': new_context ,
-    }]
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": host,
-            "symmetric_encryption_keys": [SECRET_KEY],
-        },
-    }}
 
 ASGI_APPLICATION = "base.routing.application"
 WSGI_APPLICATION = 'base.wsgi.application'
