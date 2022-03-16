@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block  content %}
+    <style>
+        .card{
+            background-color:black;
+            color:white;
+            min-width:500px;
+            max-width:500px
+            min-height:100px;
+            
+            box-shadow:10px 10px 5px grey;
+        }
+
+        
+
+        
+    </style>
+
+    <div class='d-flex flex-row justify-content-center'>
+        <div class='d-flex flex-column '>
+            <div class='card'>
+                <div class='card-body'>
+                    <div id='card_title_container'>
+                        <h3>Welcome to Django Chat</h3>
+                        <small>A web application for chat</small>
+                    </div> 
+                </div>
+            </div>
+
+
+            <div class='card' style='margin-top:100px'>
+                <div class='card-body'>
+                    <div>Room with '{{room_id}}' id doesn't exist</div>
+                    <a href={% url 'home_screen' %}>return to main page</a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock content %}
+

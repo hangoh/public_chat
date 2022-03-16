@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block  content %}
+    <style>
+        .card{
+            background-color:black;
+            color:white;
+            min-width:500px;
+            max-width:500px
+            min-height:100px;
+            
+            box-shadow:10px 10px 5px grey;
+        }
+
+        #chat_message_container {
+		height: 500px;
+		overflow-x: hidden;
+		overflow-y: auto;
+		padding: 10px;
+		background-color: #fff;
+		font-size: 0.9em;
+		flex-direction: column-reverse;
+	}
+        
+
+        
+    </style>
+
+    <div class='d-flex flex-row justify-content-center'>
+        <div class='d-flex flex-column '>
+            <div class='card'>
+                <div class='card-body'>
+                    <div id='card_title_container'>
+                        <h3>Welcome to Django Chat</h3>
+                        <small>A web application for chat</small>
+                        <p></p>
+                        <p><small>RoomId:  {{room_id}}</small></p>
+                    </div> 
+                    <small><a href="{% url 'home_screen' %}">Return to Home Page</a></small>
+                </div>
+            </div>
+
+            <div class='d-flex flex-row pt-3'>
+                <div class='d-none'id='user_name_container'></div>
+                <div class='d-none'id='room_id_container'>{{room_id}}</div>
+                <div class='d-flex m-auto'id='join_condition_container'></div>
+            </div>
+
+            <div class='card' style='margin-top:50px' id='main_chat_container'>
+                <div class='card-body' >
+                    <form onsubmit='return changeCardBody()'>{% csrf_token %}
+                        <div>
+                            Please Enter Your Name 
+                        </div>
+                        <input class='form-control' placeholder='Enter Name Here' name='user_name' id='user_name_input' type='text' required>
+                        <div class='d-flex flex-row justify-content-center mt-3'>
+                            <button class='btn btn-block m-auto' style="background-color:white; color:black; border-radius:15px;" type='submit' type='submit'>Join</button>
+                        </div>
+                    </form>
+                  
+                   
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type='text/javascript'>
+        function changeCardBody(){
+            
+            var room_id = '{{room_id}}'
+            var username = document.getElementById('user_name_input').value
+            document.getElementById('user_name_container').innerHTML = username
+            document.getElementById('card_title_container').innerHTML+=`<p><small>username:  ${username}</small></p>`
+            document.getElementById('main_chat_container').innerHTML=createChatContainer()
+            
+            
+            setupWebSocket(room_id,username)
+            loadChatElement()
+
+            return false
+        }
+
+        function createChatContainer(){
+            return `
+                <div class='d-flex flex-row'>
+                    <h4 class='justify-content-start me-auto'>{{room_name}}</h4>
+                   
+                </div>
+                <div class='d-flex flex-column' style='min-width:500px; max-width:500px; min-height:500px; max-height:500px; background-color:white; color:black;' >
+                    <div class='d-flex chat-log' id='chat_message_container'>
+
+                    </div>
+                </div>
+                <div id='pagination_page_number' class='d-none'>1</div>
+
+                <div class="d-flex flex-row chat-message-input-container">
+                    <textarea class="flex-grow-1 chat-message-input" id="id_chat_message_input"></textarea>
+                    <button class="btn btn-block chat-message-submit-button" style='color:white;' id="id_chat_message_submit">
+                        <span class="material-icons">send
+                        </span>
+                    </button>
+                </div>
+            `
+        }
+        
+    </script>  
+
+    <!--all javascript function for websocket and function related to websocket-->
+    <script type='text/javascript'>
+        var chatWebSocket = null
+        var room_id = null
+        var user_name = null
+
+        function loadChatElement(){
+            document.getElementById('id_chat_message_input').focus()
+            document.getElementById('id_chat_message_input').onkeyup =function(e){
+                if(e.keyCode==13 && e.shiftKey){
+
+                }else if(e.keyCode==13 && !e.shiftKey){
+                    document.getElementById('id_chat_message_submit').click()
+                }
+            }
+
+            document.getElementById('id_chat_message_submit').onclick = function(e){
+                const messageInputDom = document.getElementById('id_chat_message_input');
+			    const message = messageInputDom.value
+                if(message!== ""){
+                    chatWebSocket.send(JSON.stringify({
+                        'command':'send_message',
+                        'roomId':`${room_id}`,
+                        'username':`${user_name}`,
+                        'message':message,
+
+                    }))
+                    messageInputDom.value = ""
+                }
+            }
+
+            document.getElementById('chat_message_container').addEventListener('scroll',function(e){
+            var chatMessageContainer = document.getElementById('chat_message_container')
+            if((Math.abs(chatMessageContainer.scrollTop)) >= (chatMessageContainer.scrollHeight-chatMessageContainer.offsetHeight)){
+                getPreviousChat(room_id)
+            }
+        })
+
+        }
+
+        function setupWebSocket(roomId,username){
+            room_id = roomId
+            user_name = username
+            ws_scheme = window.location.protocol =='https'?'wss':'ws'
+            {% if debug %}
+                ws_path = ws_scheme + '://' + window.location.host +`/${room_id}/`
+            {% else %}
+                 ws_path = ws_scheme + '://' + window.location.host +`:8001/${room_id}/`
+            {% endif %}
+
+            chatWebSocket = new WebSocket(ws_path)
+
+            chatWebSocket.onmessage = function(message){
+                var data = JSON.parse(message.data)
+
+                if(data.content == 'join_success'){
+                    
+                    getPreviousChat(room_id)
+                }
+
+                if(data.content == 'chat_message'){
+                    appendMessage(data.username, data.message)
+                }
+
+                if(data.content == 'previous_messages'){
+                    setPageNumber(data['new_page_number'])
+                    appendPreviousMessages(data['messages'])
+                }
+               
+            }
+
+            
+
+            chatWebSocket.addEventListener('open',function(){
+                console.log('Chatsocket Open')
+                chatWebSocket.send(JSON.stringify({
+                    'command':'join',
+                    'roomId':`${room_id}`,
+                    'username':`${user_name}`
+                }))
+            })
+
+           
+            if(chatWebSocket.readyState == WebSocket.OPEN){
+			console.log('Chatwebsocket OPEN')
+            }else if(chatWebSocket.readyState == WebSocket.CONNECTING){
+                console.log("Chatwebsocket CONNECTING...")
+            }
+        }
+    </script>  
+
+    <!--various javascript function for different websocket situation-->
+    <script type='text/javascript'>
+        function appendMessage(username, message){
+            var chatMessageContainer = document.getElementById('chat_message_container')
+            var chatCard = document.createElement('card')
+            var chat = document.createElement('div')
+            chat.classList.add("d-flex")
+            chat.classList.add("flex-row")
+            chat.id = initializeChatId(message.message_id)
+            var nameRow = document.createElement('strong')
+            nameRow.innerHTML = username
+            var chatRow = document.createElement('p')
+            chatRow.style = 'max-width:400px'
+            chatRow.innerHTML = ':'+`${message.message}`
+
+            chat.appendChild(nameRow)
+            chat.appendChild(chatRow)
+            chatCard.appendChild(chat)
+
+            chatMessageContainer.insertBefore(chatCard,chatMessageContainer.firstChild)
+            chatMessageContainer.scrollTop = chatMessageContainer.scrollHeight
+
+            
+        }
+
+        function getPreviousChat(room_id){
+            var page_number = document.getElementById('pagination_page_number').innerHTML
+            chatWebSocket.send(JSON.stringify({
+                'command':'get_previous_chat',
+                'page_number':page_number,
+                'roomId':room_id
+            }))
+        }
+
+        function setPageNumber(num){
+            document.getElementById('pagination_page_number').innerHTML = num
+        }
+
+        function appendPreviousMessages(messages){
+            messages.forEach(message=>{
+                if(document.getElementById('chat_message_id_'+message.message_id)){
+
+                }else{
+                    var chatMessageContainer = document.getElementById('chat_message_container')
+                    var chatCard = document.createElement('card')
+                    var chat = document.createElement('div')
+                    chat.classList.add("d-flex")
+                    chat.classList.add("flex-row")
+                    chat.id = initializeChatId(message.message_id)
+                    var nameRow = document.createElement('strong')
+                    nameRow.innerHTML = message.username
+                    var chatRow = document.createElement('p')
+                    chatRow.style = 'max-width:400px'
+                    chatRow.innerHTML = ':'+`${message.message}`
+
+                    chat.appendChild(nameRow)
+                    chat.appendChild(chatRow)
+                    chatCard.appendChild(chat)
+
+                    chatMessageContainer.appendChild(chatCard)
+                    
+                }
+            })
+        }
+
+        
+
+        function initializeChatId(id){
+            return "chat_message_id_"+id
+        }
+    </script>
+
+    
+
+    
+
+{% endblock content %}
+

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block  content %}
+    <style>
+        .card{
+            background-color:black;
+            color:white;
+            min-width:500px;
+            max-width:500px
+            min-height:100px;
+            
+            box-shadow:10px 10px 5px grey;
+        }
+
+        
+
+        
+    </style>
+
+    <div class='d-flex flex-row justify-content-center'>
+        <div class='d-flex flex-column '>
+            <div class='card'>
+                <div class='card-body'>
+                    <div id='card_title_container'>
+                        <h3>Welcome to Django Chat</h3>
+                        <small>A web application for chat</small>
+                    </div> 
+                </div>
+            </div>
+
+            <div class='card' style='margin-top:100px'>
+                <div class='card-body'>
+
+                    <div class='d-flex flex-row '>
+                        <div class='btn-block m-auto'  type='button' id='create_room_form_button'onclick='CreateCreateRoomForm();' style="border-bottom:2px solid white;">create chat room</div>
+                        <div>|</div>
+                        <div class='btn-block m-auto'  type='button' id='join_room_form_button'onclick='CreateJoinRoomForm();'>join chat room</div>
+                    </div>
+                    
+                    <div class='d-flex flex-row justify-content-center mt-3'>
+                            <h3 id='form_title'>Create Chat Room</h3>
+                    </div>
+
+                    <form method='post'>
+                        {% csrf_token %}
+                        <div class='mt-2 ' id='room_name_id'>
+                            Room Name
+                        </div>
+                        <input class='form-control' placeholder='Enter Room Name(No more than 30 character and no space)' name='room_name' id='room_name_input' type='text' required>
+                        <div class='d-flex flex-row justify-content-center mt-3'>
+                            <button class='btn btn-block m-auto' style="background-color:white; color:black; border-radius:15px;" type='submit' id='create_or_join_button'>create room</button>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script type='text/javascript'>
+        function CreateCreateRoomForm(){
+            document.getElementById('room_name_id').innerHTML='Room Name'
+            document.getElementById('form_title').innerHTML='Create Chat Room'
+            var RoomNameInput = document.getElementById('room_name_input')
+            RoomNameInput.placeholder = 'Enter Room Name'
+            RoomNameInput.name = 'room_name'
+            RoomNameInput.id = 'room_name_input'
+            document.getElementById('create_or_join_button').innerHTML='create room'
+
+            document.getElementById('create_room_form_button').style='border-bottom:2px solid white;'
+            document.getElementById('join_room_form_button').style='border-bottom:none;'
+            
+        }
+
+        function CreateJoinRoomForm(){
+            document.getElementById('room_name_id').innerHTML='Room Id'
+            document.getElementById('form_title').innerHTML='Join Chat Room'
+            var RoomNameInput = document.getElementById('room_name_input')
+            RoomNameInput.placeholder = 'Enter Room Id'
+            RoomNameInput.name = 'room_id'
+            RoomNameInput.id = 'room_name_input'
+
+            document.getElementById('create_or_join_button').innerHTML='join room'
+            document.getElementById('create_room_form_button').style='border-bottom:none; '
+            document.getElementById('join_room_form_button').style='border-bottom:2px solid white; '
+            
+        }
+
+        
+    </script>
+
+{% endblock content %}
+
