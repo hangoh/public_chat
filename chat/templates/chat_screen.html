@@ -150,11 +150,12 @@
             room_id = roomId
             user_name = username
             ws_scheme = window.location.protocol =='https:'?'wss':'ws'
-            {% if debug %}
+            if(ws_scheme=="ws"){
                 ws_path = ws_scheme + '://' + window.location.host +`/ws/${room_id}/`
-            {% else %}
+	    }else{
                  ws_path = ws_scheme + '://' + window.location.host +`:8001/ws/${room_id}/`
-            {% endif %}
+	    }
+            
 
             chatWebSocket = new WebSocket(ws_path)
 
