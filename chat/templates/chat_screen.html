@@ -153,7 +153,7 @@
             {% if debug %}
                 ws_path = ws_scheme + '://' + window.location.host +`/${room_id}/`
             {% else %}
-                 ws_path = ws_scheme + '://www.' + window.location.host +`:8001/ws/${room_id}/`
+                 ws_path = ws_scheme + '://' + window.location.host +`/ws/${room_id}/`
             {% endif %}
 
             chatWebSocket = new WebSocket(ws_path)
