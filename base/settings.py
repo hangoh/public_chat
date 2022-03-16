@@ -148,12 +148,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #The next line is needed for deployment on heroku else the form will not work
 CSRF_TRUSTED_ORIGINS = ["https://django-public-chat.herokuapp.com"]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get('REDIS_URL'),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": 'rediss://:pf0a1e9cb0ce766bfa76c7c519ef717205d80b1996c53e00dc895ac6a45d6b6e3@ec2-44-194-18-184.compute-1.amazonaws.com:10980',
-            "symmetric_encryption_keys": [SECRET_KEY],
-        },
-    }}
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get('REDIS_URL'),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "ssl_cert_reqs": None
+            },
+        }
+    }
+}
