@@ -149,7 +149,7 @@
         function setupWebSocket(roomId,username){
             room_id = roomId
             user_name = username
-            ws_scheme = window.location.protocol =='https'?'wss':'ws'
+            ws_scheme = window.location.protocol =='https:'?'wss':'ws'
             {% if debug %}
                 ws_path = ws_scheme + '://' + window.location.host +`/${room_id}/`
             {% else %}
