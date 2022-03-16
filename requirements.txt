@@ -12,6 +12,7 @@ cryptography==36.0.2
 daphne==3.0.2
 Deprecated==1.2.13
 Django==4.0.3
+django-redis==5.2.0
 hiredis==2.0.0
 hyperlink==21.0.0
 idna==3.3
