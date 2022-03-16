@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = ["django-public-chat.herokuapp.com","127.0.0.1"]
@@ -151,3 +151,6 @@ MEDIA_URL ='/media/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#The next line is needed for deployment on heroku else the form will not work
+CSRF_TRUSTED_ORIGINS = ["https://django-public-chat.herokuapp.com/"]
