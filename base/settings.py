@@ -153,4 +153,4 @@ MEDIA_URL ='/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #The next line is needed for deployment on heroku else the form will not work
-CSRF_TRUSTED_ORIGINS = ["https://django-public-chat.herokuapp.com/"]
+CSRF_TRUSTED_ORIGINS = ["https://django-public-chat.herokuapp.com"]
