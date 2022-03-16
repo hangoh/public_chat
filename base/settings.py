@@ -79,7 +79,7 @@ TEMPLATES = [
     },
 ]
 
- import ssl
+import ssl
 new_context = ssl.SSLContext() # this sets the verify_mode to 'CERT_NONE'
 host = [{
         'address': f'rediss://{REDIS_HOST}:{REDIS_PORT}', # don't miss the 'rediss'!
