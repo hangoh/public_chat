@@ -148,39 +148,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #The next line is needed for deployment on heroku else the form will not work
 CSRF_TRUSTED_ORIGINS = ["https://django-public-chat.herokuapp.com"]
 
-
-# Mute the Heroku Redis error:
-# "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self signed certificate in certificate chain"
-# by disabling hostname check.
-
-ssl_context = ssl.SSLContext()
-ssl_context.check_hostname = False
-
-heroku_redis_ssl_host = {
-    'address': 'rediss://:password@127.0.0.1:6379/0',  # The 'rediss' schema denotes a SSL connection.
-    'ssl': ssl_context
-}
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': (heroku_redis_ssl_host,)
-        }
-    },
-}
-
-"""
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": ["REDIS_URL"],
+            "hosts": [os.environ['REDIS_TLS_URL']],
         },
     },
 }
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-} """
