@@ -180,3 +180,5 @@ CHANNEL_LAYERS = {
         }
     },
 }
+
+print(os.environ['REDIS_TLS_URL'])
