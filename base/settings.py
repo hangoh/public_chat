@@ -176,9 +176,9 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': (heroku_redis_ssl_host,)
+            'hosts': (heroku_redis_ssl_host)
         }
     },
 }
 
-print(os.environ['REDIS_TLS_URL'])
+
