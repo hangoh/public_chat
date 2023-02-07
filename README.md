@@ -5,7 +5,7 @@ This repository contains the code for a public chat application. The code is wri
 ## Usage
 
 To run the code, you need to have Python and the necessary packages installed. You can install the packages by running the following command in the terminal:
-'pip install -r requirements.txt'
+`pip install -r requirements.txt`
 
 
 
