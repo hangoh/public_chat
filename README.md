@@ -1,6 +1,16 @@
-this is a real time chat app where user created a room por join a room to chat.
-the current website is running well in http(unsecure) 
-but having problem to connect to websockets in https(secure) 
-reasons(i can think of):
-    -SSL
-    -require nginx and more custom setting to daphne
+# Public Chat
+
+This repository contains the code for a public chat application. The code is written in Python and uses the django framework for web development. The chat uses WebSockets for real-time communication between clients and the server.
+
+## Usage
+
+To run the code, you need to have Python and the necessary packages installed. You can install the packages by running the following command in the terminal:
+'pip install -r requirements.txt'
+
+
+
+The application will be running at `http://localhost/` and you can access it through your web browser. Multiple users can connect to the chat room and exchange messages in real-time.
+
+## Features
+
+- Real-time chat between multiple users
